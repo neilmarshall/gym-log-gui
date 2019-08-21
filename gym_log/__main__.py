@@ -1,7 +1,13 @@
+import os
 import requests
 import tkinter as tk
 from concurrent.futures import ThreadPoolExecutor
+from dotenv import load_dotenv
 from tkinter import ttk
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.split(basedir)[0]
+load_dotenv(os.path.join(basedir, '.env'))
 
 class LoginWindow(tk.Tk):
 
@@ -30,6 +36,9 @@ class LoginWindow(tk.Tk):
         self.config(menu=menu_bar)
 
         self.gym_log_controller = GymLogController()
+
+        self.username_entry.insert(0, os.environ.get('DEFAULT_USERNAME'))
+        self.password_entry.insert(0, os.environ.get('DEFAULT_PASSWORD'))
 
     def login(self):
         def begin_login():
