@@ -23,6 +23,12 @@ class LoginWindow(tk.Tk):
         ttk.Button(input_frame, text="Login",
                 command=self.login).grid(row=2, columnspan=2)
 
+        menu_bar = tk.Menu(self)
+        file_menu = tk.Menu(menu_bar, tearoff=0)
+        file_menu.add_command(label="Exit", command=self.quit)
+        menu_bar.add_cascade(label='File', menu=file_menu)
+        self.config(menu=menu_bar)
+
     def login(self):
         def begin_login():
             # TODO : This function needs to extract username and password from the GUI and use these to obtain a token
