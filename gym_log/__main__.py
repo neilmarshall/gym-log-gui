@@ -7,8 +7,6 @@ class LoginWindow(tk.Tk):
 
     def __init__(self):
 
-        self.thread_pool = ThreadPoolExecutor()
-
         super().__init__()
 
         input_frame = ttk.Frame(self)
@@ -47,7 +45,9 @@ class LoginWindow(tk.Tk):
         progress_bar = ttk.Progressbar(progress_frame, mode="indeterminate")
         progress_bar.pack()
         progress_bar.start()
-        self.thread_pool.submit(begin_login).add_done_callback(end_login)
+        pool = ThreadPoolExecutor()
+        pool.submit(begin_login).add_done_callback(end_login)
+        pool.shutdown(False)
 
 
 if __name__ == '__main__':
