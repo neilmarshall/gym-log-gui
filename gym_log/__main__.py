@@ -1,4 +1,4 @@
-import time
+import requests
 import tkinter as tk
 from concurrent.futures import ThreadPoolExecutor
 from tkinter import ttk
@@ -29,17 +29,14 @@ class LoginWindow(tk.Tk):
         menu_bar.add_cascade(label='File', menu=file_menu)
         self.config(menu=menu_bar)
 
+        self.gym_log_controller = GymLogController()
+
     def login(self):
         def begin_login():
-            # TODO : This function needs to extract username and password from the GUI and use these to obtain a token
-            print(self.username_entry.get())  # TODO : Remove
-            time.sleep(3)  # TODO : Remove
-            print(self.password_entry.get())  # TODO : Remove
+            self.gym_log_controller.set_token(self.username_entry.get(), self.password_entry.get())
         def end_login(future):
-            print('logged in...')  # TODO : Remove
             progress_bar.stop()
             progress_window.destroy()
-        print('logging in...')  # TODO : Remove
         progress_window = tk.Toplevel(self)
         progress_frame = ttk.Frame(progress_window)
         progress_frame.pack()
@@ -52,5 +49,30 @@ class LoginWindow(tk.Tk):
         pool.shutdown(False)
 
 
+class GymLogController():
+
+    base_url = r'http://localhost:5000/api/'
+
+    def __init__(self):
+        self.token = None
+
+    def set_token(self, username, password):
+        url = GymLogController.base_url + 'token'
+        response = requests.get(url, auth=(username, password))
+        try:
+            if response.status_code == 200:
+                try:
+                    self.token = response.json()['token']
+                    print(self.token)  # TODO : Delete this
+                except KeyError as e:
+                    pass  # TODO : Send error message to logging output
+            elif response.status_code == 401:
+                pass  # TODO : Deal with unauthorised access (show an error message?)
+            else:
+                pass  # TODO : Send error message to logging output
+        except Exception as e:
+            print('error caught', e)  # TODO : Send error message to logging output
+
+
 if __name__ == '__main__':
-    LoginWindow().mainloop()
+    LoginWindow().mainloop()  # TODO : Inject a logger here
