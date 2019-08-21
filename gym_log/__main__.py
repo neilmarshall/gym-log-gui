@@ -15,8 +15,10 @@ class LoginWindow(tk.Tk):
         ttk.Label(input_frame, text="Username").grid(row=0, column=0)
         ttk.Label(input_frame, text="Password").grid(row=1, column=0)
 
-        ttk.Entry(input_frame).grid(row=0, column=1)
-        ttk.Entry(input_frame).grid(row=1, column=1)
+        self.username_entry = ttk.Entry(input_frame)
+        self.username_entry.grid(row=0, column=1)
+        self.password_entry = ttk.Entry(input_frame, show='*')
+        self.password_entry.grid(row=1, column=1)
 
         ttk.Button(input_frame, text="Login",
                 command=self.login).grid(row=2, columnspan=2)
@@ -30,9 +32,9 @@ class LoginWindow(tk.Tk):
     def login(self):
         def begin_login():
             # TODO : This function needs to extract username and password from the GUI and use these to obtain a token
-            print("inner function called")  # TODO : Remove
+            print(self.username_entry.get())  # TODO : Remove
             time.sleep(3)  # TODO : Remove
-            print("inner function ended")  # TODO : Remove
+            print(self.password_entry.get())  # TODO : Remove
         def end_login(future):
             print('logged in...')  # TODO : Remove
             progress_bar.stop()
