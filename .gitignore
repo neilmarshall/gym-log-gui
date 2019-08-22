@@ -124,3 +124,6 @@ dmypy.json
 
 # .swp files
 **/.*.swp
+
+# PyCharm
+.idea/
