@@ -28,10 +28,17 @@ class LoginWindow(tk.Tk):
         # create menu bar
         self.create_menu_bar()
 
-        # create login window
+        # create login window and variables used in that widow
         self.login_window = ttk.Frame(self)
         self.username_entry = tk.StringVar()
         self.password_entry = tk.StringVar()
+
+        # create home window and variables used in that widow
+        self.home_window = ttk.Frame(self)
+        self.exercise_name = tk.StringVar()
+        self.exercise_weight = tk.IntVar()
+        self.exercise_reps = tk.IntVar()
+        self.exercise_sets = tk.IntVar()
 
         # launch login window
         self.launch_login_window()
@@ -71,11 +78,12 @@ class LoginWindow(tk.Tk):
         def end_login(future):
             progress_bar.stop()
             progress_window.destroy()
-            if not future.result():
-                messagebox.showwarning("404 - Unauthorized Access",
-                        "Login attempt failed - please try again")
-            else:
+            if future.result():
                 self.login_window.destroy()
+                self.launch_home_window()
+            else:
+                messagebox.showwarning("404 - Unauthorized Access",
+                                       "Login attempt failed - please try again")
         progress_window = tk.Toplevel(self.login_window)
         progress_frame = ttk.Frame(progress_window)
         progress_frame.pack()
@@ -84,6 +92,33 @@ class LoginWindow(tk.Tk):
         progress_bar.pack()
         progress_bar.start()
         self.thread_pool.submit(begin_login).add_done_callback(end_login)
+
+    def launch_home_window(self):
+        """Build and launch home window"""
+        self.home_window.pack()
+        notebook = ttk.Notebook(self.home_window)
+        notebook.pack()
+        add_log_frame = self.build_add_log_frame(notebook)
+        search_log_frame = ttk.Frame(notebook)
+        notebook.add(add_log_frame, text="Add Logs")
+        notebook.add(search_log_frame, text="Search Logs")
+
+    def build_add_log_frame(self, parent):
+        add_log_frame = ttk.Frame(parent)
+        ttk.Label(add_log_frame, text="Exercise:").grid(row=0, column=0, sticky=tk.W)
+        ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
+        ttk.Label(add_log_frame, text="Reps:").grid(row=2, column=0, sticky=tk.W)
+        ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
+        ttk.Entry(add_log_frame, textvariable=self.exercise_name).grid(row=0, column=1)
+        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_weight).grid(row=1, column=1)
+        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_reps).grid(row=2, column=1)
+        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_sets).grid(row=3, column=1)
+        ttk.Button(add_log_frame, text="Submit", command=self.add_log).grid(row=4, columnspan=2)
+        return add_log_frame
+
+    def add_log(self):
+        print(self.exercise_name.get(), self.exercise_weight.get(),
+              self.exercise_reps.get(), self.exercise_sets.get())
 
 
 class GymLogController():
