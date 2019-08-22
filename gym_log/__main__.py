@@ -19,6 +19,8 @@ class LoginWindow(tk.Tk):
 
         self.logger = logger
 
+        self.thread_pool = ThreadPoolExecutor()
+
         self.gym_log_controller = GymLogController(self.logger)
 
         menu_bar = tk.Menu(self)
@@ -47,6 +49,10 @@ class LoginWindow(tk.Tk):
         self.username_entry.insert(0, os.environ.get('DEFAULT_USERNAME'))
         self.password_entry.insert(0, os.environ.get('DEFAULT_PASSWORD'))
 
+    def quit(self):
+        self.thread_pool.shutdown(False)
+        super().quit()
+
     def login(self):
         def begin_login():
             username = self.username_entry.get()
@@ -67,9 +73,7 @@ class LoginWindow(tk.Tk):
         progress_bar = ttk.Progressbar(progress_frame, mode="indeterminate")
         progress_bar.pack()
         progress_bar.start()
-        pool = ThreadPoolExecutor()
-        pool.submit(begin_login).add_done_callback(end_login)
-        pool.shutdown(False)
+        self.thread_pool.submit(begin_login).add_done_callback(end_login)
 
 
 class GymLogController():
