@@ -46,8 +46,8 @@ class LoginWindow(tk.Tk):
         ttk.Button(self.input_frame, text="Login",
                 command=self.login).grid(row=2, columnspan=2)
 
-        self.username_entry.insert(0, os.environ.get('DEFAULT_USERNAME'))
-        self.password_entry.insert(0, os.environ.get('DEFAULT_PASSWORD'))
+        self.username_entry.insert(0, os.environ.get('DEFAULT_USERNAME') or '')
+        self.password_entry.insert(0, os.environ.get('DEFAULT_PASSWORD') or '')
 
     def quit(self):
         self.thread_pool.shutdown(False)
