@@ -19,19 +19,7 @@ class LoginWindow(tk.Tk):
 
         self.logger = logger
 
-        input_frame = ttk.Frame(self)
-        input_frame.pack()
-
-        ttk.Label(input_frame, text="Username").grid(row=0, column=0)
-        ttk.Label(input_frame, text="Password").grid(row=1, column=0)
-
-        self.username_entry = ttk.Entry(input_frame)
-        self.username_entry.grid(row=0, column=1)
-        self.password_entry = ttk.Entry(input_frame, show='*')
-        self.password_entry.grid(row=1, column=1)
-
-        ttk.Button(input_frame, text="Login",
-                command=self.login).grid(row=2, columnspan=2)
+        self.gym_log_controller = GymLogController(self.logger)
 
         menu_bar = tk.Menu(self)
         file_menu = tk.Menu(menu_bar, tearoff=0)
@@ -39,7 +27,22 @@ class LoginWindow(tk.Tk):
         menu_bar.add_cascade(label='File', menu=file_menu)
         self.config(menu=menu_bar)
 
-        self.gym_log_controller = GymLogController(self.logger)
+        self.load_input_frame()
+
+    def load_input_frame(self):
+        self.input_frame = ttk.Frame(self)
+        self.input_frame.pack()
+
+        ttk.Label(self.input_frame, text="Username").grid(row=0, column=0)
+        ttk.Label(self.input_frame, text="Password").grid(row=1, column=0)
+
+        self.username_entry = ttk.Entry(self.input_frame)
+        self.username_entry.grid(row=0, column=1)
+        self.password_entry = ttk.Entry(self.input_frame, show='*')
+        self.password_entry.grid(row=1, column=1)
+
+        ttk.Button(self.input_frame, text="Login",
+                command=self.login).grid(row=2, columnspan=2)
 
         self.username_entry.insert(0, os.environ.get('DEFAULT_USERNAME'))
         self.password_entry.insert(0, os.environ.get('DEFAULT_PASSWORD'))
@@ -55,7 +58,9 @@ class LoginWindow(tk.Tk):
             if not future.result():
                 messagebox.showwarning("404 - Unauthorized Access",
                         "Login attempt failed - please try again")
-        progress_window = tk.Toplevel(self)
+            else:
+                self.input_frame.destroy()
+        progress_window = tk.Toplevel(self.input_frame)
         progress_frame = ttk.Frame(progress_window)
         progress_frame.pack()
         ttk.Label(progress_frame, text="Requesting login token...").pack()
