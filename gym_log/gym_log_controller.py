@@ -9,7 +9,7 @@ class GymLogController():
         self.token = None
         self.exercises = None
 
-    def set_token(self, username, password):
+    def check_token(self, username, password):
         try:
             url = GymLogController.base_url + 'token'
             response = requests.get(url, auth=(username, password))

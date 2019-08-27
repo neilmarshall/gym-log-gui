@@ -76,7 +76,7 @@ class LoginWindow(tk.Tk):
         """Set a user token on the gym log controller"""
         def begin_login():
             username, password = self.username_entry.get(), self.password_entry.get()
-            is_login_successful = self.gym_log_controller.set_token(username, password)
+            is_login_successful = self.gym_log_controller.check_token(username, password)
             if is_login_successful:
                 self.gym_log_controller.set_exercises()
             return is_login_successful
