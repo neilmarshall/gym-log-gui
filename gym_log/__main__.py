@@ -74,7 +74,10 @@ class LoginWindow(tk.Tk):
         """Set a user token on the gym log controller"""
         def begin_login():
             username, password = self.username_entry.get(), self.password_entry.get()
-            return self.gym_log_controller.set_token(username, password)
+            is_login_successful = self.gym_log_controller.set_token(username, password)
+            if is_login_successful:
+                self.gym_log_controller.set_exercises()
+            return is_login_successful
         def end_login(future):
             progress_bar.stop()
             progress_window.destroy()
@@ -104,16 +107,24 @@ class LoginWindow(tk.Tk):
         notebook.add(search_log_frame, text="Search Logs")
 
     def build_add_log_frame(self, parent):
+        """Home window frame responsible for adding new logs"""
         add_log_frame = ttk.Frame(parent)
+
         ttk.Label(add_log_frame, text="Exercise:").grid(row=0, column=0, sticky=tk.W)
+        ttk.Combobox(add_log_frame, textvariable=self.exercise_name, state='readonly',
+                     values=self.gym_log_controller.exercises).grid(row=0, column=1, sticky=tk.E)
+
         ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
+        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_weight).grid(row=1, column=1, sticky=tk.E)
+
         ttk.Label(add_log_frame, text="Reps:").grid(row=2, column=0, sticky=tk.W)
+        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_reps).grid(row=2, column=1, sticky=tk.E)
+
         ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
-        ttk.Entry(add_log_frame, textvariable=self.exercise_name).grid(row=0, column=1)
-        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_weight).grid(row=1, column=1)
-        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_reps).grid(row=2, column=1)
-        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_sets).grid(row=3, column=1)
+        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_sets).grid(row=3, column=1, sticky=tk.E)
+
         ttk.Button(add_log_frame, text="Submit", command=self.add_log).grid(row=4, columnspan=2)
+
         return add_log_frame
 
     def add_log(self):
@@ -128,6 +139,7 @@ class GymLogController():
     def __init__(self, logger):
         self.logger = logger
         self.token = None
+        self.exercises = None
 
     def set_token(self, username, password):
         try:
@@ -136,7 +148,7 @@ class GymLogController():
             if response.status_code == 200:
                 try:
                     self.token = response.json()['token']
-                    print(self.token)  # TODO : Delete this
+                    self.logger.info(self.token)  # TODO : Delete this
                     return True
                 except KeyError:
                     self.logger.exception("Unrecognised JSON response")
@@ -146,6 +158,24 @@ class GymLogController():
                 raise ValueError("unexpected status code received")
         except requests.exceptions.RequestException:
             self.logger.exception("An unhandled exception has been caught attempting to obtain an access token")
+
+    def set_exercises(self):
+        if self.token:
+            try:
+                url = GymLogController.base_url + 'exercises'
+                headers = {'Authorization': f'Bearer {self.token}'}
+                response = requests.get(url=url, headers=headers)
+                if response.status_code == 200:
+                    self.exercises = [e.title() for e in response.json()]
+                    self.logger.info(self.exercises)
+                elif response.status_code == 401:
+                    raise PermissionError("invalid token")
+                else:
+                    raise ValueError("unexpected status code received")
+            except requests.exceptions.RequestException:
+                self.logger.exception("An unhandled exception has been caught attempting to obtain exercise details")
+        else:
+            raise PermissionError("invalid token")
 
 
 if __name__ == '__main__':
