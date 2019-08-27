@@ -108,22 +108,46 @@ class LoginWindow(tk.Tk):
 
     def build_add_log_frame(self, parent):
         """Home window frame responsible for adding new logs"""
+        def set_button_state(e):
+            if self.exercise_name.get() and self.exercise_reps.get() and self.exercise_sets.get():
+                submit_button.state(['!disabled'])
+            else:
+                submit_button.state(['disabled'])
+
         add_log_frame = ttk.Frame(parent)
 
         ttk.Label(add_log_frame, text="Exercise:").grid(row=0, column=0, sticky=tk.W)
-        ttk.Combobox(add_log_frame, textvariable=self.exercise_name, state='readonly',
-                     values=self.gym_log_controller.exercises).grid(row=0, column=1, sticky=tk.E)
+        exercise_name_selector = ttk.Combobox(add_log_frame,
+                                              textvariable=self.exercise_name,
+                                              state='readonly',
+                                              values=self.gym_log_controller.exercises)
+        exercise_name_selector.grid(row=0, column=1, sticky=tk.E)
 
         ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
-        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_weight).grid(row=1, column=1, sticky=tk.E)
+        ttk.Spinbox(add_log_frame, from_=0, to=10,
+                    textvariable=self.exercise_weight).grid(row=1, column=1, sticky=tk.E)
 
         ttk.Label(add_log_frame, text="Reps:").grid(row=2, column=0, sticky=tk.W)
-        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_reps).grid(row=2, column=1, sticky=tk.E)
+        exercise_reps_selector = ttk.Spinbox(add_log_frame,
+                                             from_=0,
+                                             to=10,
+                                             textvariable=self.exercise_reps)
+        exercise_reps_selector.grid(row=2, column=1, sticky=tk.E)
 
         ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
-        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_sets).grid(row=3, column=1, sticky=tk.E)
+        exercise_sets_selector = ttk.Spinbox(add_log_frame,
+                                             from_=0,
+                                             to=10,
+                                             textvariable=self.exercise_sets)
+        exercise_sets_selector.grid(row=3, column=1, sticky=tk.E)
 
-        ttk.Button(add_log_frame, text="Submit", command=self.add_log).grid(row=4, columnspan=2)
+        submit_button = ttk.Button(add_log_frame, text="Submit", command=self.add_log)
+        submit_button.grid(row=4, columnspan=2)
+        submit_button.state(['disabled'])
+
+        exercise_name_selector.bind('<<ComboboxSelected>>', set_button_state)
+        exercise_reps_selector.bind('<ButtonRelease-1>', set_button_state)
+        exercise_sets_selector.bind('<ButtonRelease-1>', set_button_state)
 
         return add_log_frame
 
@@ -148,7 +172,6 @@ class GymLogController():
             if response.status_code == 200:
                 try:
                     self.token = response.json()['token']
-                    self.logger.info(self.token)  # TODO : Delete this
                     return True
                 except KeyError:
                     self.logger.exception("Unrecognised JSON response")
@@ -167,7 +190,6 @@ class GymLogController():
                 response = requests.get(url=url, headers=headers)
                 if response.status_code == 200:
                     self.exercises = [e.title() for e in response.json()]
-                    self.logger.info(self.exercises)
                 elif response.status_code == 401:
                     raise PermissionError("invalid token")
                 else:
