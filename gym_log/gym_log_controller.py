@@ -42,3 +42,6 @@ class GymLogController():
                 self.logger.exception("An unhandled exception has been caught attempting to obtain exercise details")
         else:
             raise PermissionError("invalid token")
+
+    def add_exercise(self, exercise):
+        self.logger.info(exercise)

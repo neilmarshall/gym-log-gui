@@ -103,10 +103,29 @@ class LoginWindow(tk.Tk):
         self.home_window.pack()
         notebook = ttk.Notebook(self.home_window)
         notebook.pack()
+
         add_log_frame = self.build_add_log_frame(notebook)
-        search_log_frame = ttk.Frame(notebook)
         notebook.add(add_log_frame, text="Add Logs")
+
+        add_exercise_frame = self.build_add_exercise_frame(notebook)
+        notebook.add(add_exercise_frame, text="Add Exercises")
+
+        search_log_frame = ttk.Frame(notebook)
         notebook.add(search_log_frame, text="Search Logs")
+
+    def build_add_exercise_frame(self, parent):
+        """Home window frame responsible for adding new exercises"""
+        def add_exercise(*args):
+            exercise = exercise_name_selector.get()
+            self.gym_log_controller.add_exercise(exercise)
+        add_exercise_frame = ttk.Frame(parent)
+        ttk.Label(add_exercise_frame, text="Exercise:") \
+           .grid(row=0, column=0, sticky=tk.W)
+        exercise_name_selector = ttk.Entry(add_exercise_frame, )
+        exercise_name_selector.grid(row=0, column=1, sticky=tk.E)
+        ttk.Button(add_exercise_frame, text="Add Exercise",
+                   command=add_exercise).grid(row=1, columnspan=2)
+        return add_exercise_frame
 
     def build_add_log_frame(self, parent):
         """Home window frame responsible for adding new logs"""
