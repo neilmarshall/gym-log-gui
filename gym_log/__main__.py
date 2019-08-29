@@ -115,16 +115,24 @@ class LoginWindow(tk.Tk):
 
     def build_add_exercise_frame(self, parent):
         """Home window frame responsible for adding new exercises"""
+        def set_button_state(*args):
+            state = "!disabled" if exercise_name.get() != "" else "disabled"
+            add_exercise_button.state([state])
         def add_exercise(*args):
-            exercise = exercise_name_selector.get()
+            exercise = exercise_name.get()
             self.gym_log_controller.add_exercise(exercise)
         add_exercise_frame = ttk.Frame(parent)
         ttk.Label(add_exercise_frame, text="Exercise:") \
            .grid(row=0, column=0, sticky=tk.W)
-        exercise_name_selector = ttk.Entry(add_exercise_frame, )
-        exercise_name_selector.grid(row=0, column=1, sticky=tk.E)
-        ttk.Button(add_exercise_frame, text="Add Exercise",
-                   command=add_exercise).grid(row=1, columnspan=2)
+        exercise_name = tk.StringVar()
+        exercise_name.trace_add('write', set_button_state)
+        ttk.Entry(add_exercise_frame, textvariable=exercise_name) \
+           .grid(row=0, column=1, sticky=tk.E)
+        add_exercise_button = ttk.Button(add_exercise_frame,
+                                         text="Add Exercise",
+                                         command=add_exercise)
+        add_exercise_button.grid(row=1, columnspan=2)
+        add_exercise_button.state(['disabled'])
         return add_exercise_frame
 
     def build_add_log_frame(self, parent):
