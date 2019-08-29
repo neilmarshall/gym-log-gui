@@ -118,21 +118,26 @@ class LoginWindow(tk.Tk):
         def set_button_state(*args):
             state = "!disabled" if exercise_name.get() != "" else "disabled"
             add_exercise_button.state([state])
+
         def add_exercise(*args):
             exercise = exercise_name.get()
             self.gym_log_controller.add_exercise(exercise)
+
         add_exercise_frame = ttk.Frame(parent)
+
         ttk.Label(add_exercise_frame, text="Exercise:") \
            .grid(row=0, column=0, sticky=tk.W)
         exercise_name = tk.StringVar()
         exercise_name.trace_add('write', set_button_state)
         ttk.Entry(add_exercise_frame, textvariable=exercise_name) \
            .grid(row=0, column=1, sticky=tk.E)
+
         add_exercise_button = ttk.Button(add_exercise_frame,
                                          text="Add Exercise",
                                          command=add_exercise)
         add_exercise_button.grid(row=1, columnspan=2)
         add_exercise_button.state(['disabled'])
+
         return add_exercise_frame
 
     def build_add_log_frame(self, parent):
@@ -146,37 +151,32 @@ class LoginWindow(tk.Tk):
         add_log_frame = ttk.Frame(parent)
 
         ttk.Label(add_log_frame, text="Exercise:").grid(row=0, column=0, sticky=tk.W)
-        exercise_name_selector = ttk.Combobox(add_log_frame,
-                                              textvariable=self.exercise_name,
-                                              state='readonly',
-                                              values=self.gym_log_controller.exercises)
-        exercise_name_selector.grid(row=0, column=1, sticky=tk.E)
+        exercise_name = ttk.Combobox(add_log_frame,
+                                     textvariable=self.exercise_name,
+                                     state='readonly',
+                                     values=self.gym_log_controller.exercises)
+        exercise_name.grid(row=0, column=1, sticky=tk.E)
+        exercise_name.bind('<<ComboboxSelected>>', set_button_state)
 
         ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
-        ttk.Spinbox(add_log_frame, from_=0, to=10,
-                    textvariable=self.exercise_weight).grid(row=1, column=1, sticky=tk.E)
+        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_weight) \
+           .grid(row=1, column=1, sticky=tk.E)
 
         ttk.Label(add_log_frame, text="Reps:").grid(row=2, column=0, sticky=tk.W)
-        exercise_reps_selector = ttk.Spinbox(add_log_frame,
-                                             from_=0,
-                                             to=10,
-                                             textvariable=self.exercise_reps)
-        exercise_reps_selector.grid(row=2, column=1, sticky=tk.E)
+        exercise_reps = ttk.Spinbox(add_log_frame, from_=0, to=10,
+                                    textvariable=self.exercise_reps)
+        exercise_reps.grid(row=2, column=1, sticky=tk.E)
+        exercise_reps.bind('<ButtonRelease-1>', set_button_state)
 
         ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
-        exercise_sets_selector = ttk.Spinbox(add_log_frame,
-                                             from_=0,
-                                             to=10,
-                                             textvariable=self.exercise_sets)
-        exercise_sets_selector.grid(row=3, column=1, sticky=tk.E)
+        exercise_sets = ttk.Spinbox(add_log_frame, from_=0, to=10,
+                                    textvariable=self.exercise_sets)
+        exercise_sets.grid(row=3, column=1, sticky=tk.E)
+        exercise_sets.bind('<ButtonRelease-1>', set_button_state)
 
         submit_button = ttk.Button(add_log_frame, text="Submit", command=self.add_log)
         submit_button.grid(row=4, columnspan=2)
         submit_button.state(['disabled'])
-
-        exercise_name_selector.bind('<<ComboboxSelected>>', set_button_state)
-        exercise_reps_selector.bind('<ButtonRelease-1>', set_button_state)
-        exercise_sets_selector.bind('<ButtonRelease-1>', set_button_state)
 
         return add_log_frame
 
