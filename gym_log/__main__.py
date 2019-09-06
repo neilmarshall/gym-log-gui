@@ -38,6 +38,7 @@ class LoginWindow(tk.Tk):
         # create home window and variables used in that widow
         self.home_window = ttk.Frame(self)
         self.exercise_name = tk.StringVar()
+        self.update_exercise_name_options = None
         self.exercise_weight = tk.IntVar()
         self.exercise_reps = tk.IntVar()
         self.exercise_sets = tk.IntVar()
@@ -120,8 +121,16 @@ class LoginWindow(tk.Tk):
             add_exercise_button.state([state])
 
         def add_exercise(*args):
+            def update_exercise_list(future):
+                if future.result():
+                    self.update_exercise_name_options()
+                else:
+                    messagebox.showwarning("That exercise already exists - please try again")
             exercise = exercise_name.get()
-            self.gym_log_controller.add_exercise(exercise)
+            exercise_name.set("")  # clear entry widget once exercise parsed
+            self.thread_pool \
+                .submit(self.gym_log_controller.add_exercise, exercise) \
+                .add_done_callback(update_exercise_list)
 
         add_exercise_frame = ttk.Frame(parent)
 
@@ -157,6 +166,9 @@ class LoginWindow(tk.Tk):
                                      values=self.gym_log_controller.exercises)
         exercise_name.grid(row=0, column=1, sticky=tk.E)
         exercise_name.bind('<<ComboboxSelected>>', set_button_state)
+        def update_exercise_name_options():
+            exercise_name['values'] = self.gym_log_controller.exercises
+        self.update_exercise_name_options = update_exercise_name_options
 
         ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
         ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_weight) \

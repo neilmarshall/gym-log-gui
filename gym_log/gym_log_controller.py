@@ -44,4 +44,22 @@ class GymLogController():
             raise PermissionError("invalid token")
 
     def add_exercise(self, exercise):
-        self.logger.info(exercise)
+        if self.token:
+            try:
+                url = GymLogController.base_url + 'exercises'
+                headers = {'Authorization': f'Bearer {self.token}'}
+                response = requests.post(url=url, headers=headers, json={'exercises': [exercise]})
+                if response.status_code == 201:
+                    self.exercises += response.json()
+                    self.exercises.sort()
+                    return True
+                elif response.status_code == 401:
+                    raise PermissionError("invalid token")
+                elif response.status_code == 409:
+                    return False
+                else:
+                    raise ValueError("unexpected status code received")
+            except requests.exceptions.RequestException:
+                self.logger.exception("An unhandled exception has been caught attempting to create exercise")
+        else:
+            raise PermissionError("invalid token")
