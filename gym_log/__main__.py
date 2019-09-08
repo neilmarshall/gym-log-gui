@@ -1,19 +1,14 @@
 import logging
-import os
 import tkinter as tk
 from concurrent.futures import ThreadPoolExecutor
 from tkinter import messagebox
 from tkinter import ttk
 
-from dotenv import load_dotenv
 
 from gym_log.gym_log_controller import  GymLogController
+from gym_log.login_window import  LoginWindow
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-basedir = os.path.split(basedir)[0]
-load_dotenv(os.path.join(basedir, '.env'))
-
-class LoginWindow(tk.Tk):
+class MainWindow(tk.Tk):
     """Subclass of tkinter.Tk  - controls GUI application"""
 
     def __init__(self, logger):
@@ -22,18 +17,15 @@ class LoginWindow(tk.Tk):
         super().__init__()
 
         self.logger = logger
-
         self.thread_pool = ThreadPoolExecutor()
-
         self.gym_log_controller = GymLogController(self.logger)
 
         # create menu bar
         self.create_menu_bar()
 
-        # create login window and variables used in that widow
-        self.login_window = ttk.Frame(self)
-        self.username_entry = tk.StringVar()
-        self.password_entry = tk.StringVar()
+        # create login window
+        login_window = LoginWindow(self,
+                self.thread_pool, self.gym_log_controller)
 
         # create home window and variables used in that widow
         self.home_window = ttk.Frame(self)
@@ -44,7 +36,7 @@ class LoginWindow(tk.Tk):
         self.exercise_sets = tk.IntVar()
 
         # launch login window
-        self.launch_login_window()
+        login_window.launch(lambda: home_window.launch())
 
     def create_menu_bar(self):
         """Create menu bar for GUI application"""
@@ -195,8 +187,9 @@ class LoginWindow(tk.Tk):
     def add_log(self):
         print(self.exercise_name.get(), self.exercise_weight.get(),
               self.exercise_reps.get(), self.exercise_sets.get())
+'''
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    LoginWindow(logging.getLogger()).mainloop()
+    MainWindow(logging.getLogger()).mainloop()
