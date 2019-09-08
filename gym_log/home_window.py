@@ -10,15 +10,15 @@ class HomeWindow(ttk.Frame):
 
         super().__init__(parent)
 
-        self.thread_pool = thread_pool
-        self.gym_log_controller = gym_log_controller
+        self._thread_pool = thread_pool
+        self._gym_log_controller = gym_log_controller
 
-        self.exercise_name = tk.StringVar()
-        self.exercise_weight = tk.IntVar()
-        self.exercise_reps = tk.IntVar()
-        self.exercise_sets = tk.IntVar()
+        self._exercise_name = tk.StringVar()
+        self._exercise_weight = tk.IntVar()
+        self._exercise_reps = tk.IntVar()
+        self._exercise_sets = tk.IntVar()
 
-        self.update_exercise_name_options = None
+        self._update_exercise_name_options = None
 
     def launch(self):
         """Build and launch home window"""
@@ -39,11 +39,11 @@ class HomeWindow(ttk.Frame):
         """Home window frame responsible for adding new logs"""
 
         def add_log():
-            print(self.exercise_name.get(), self.exercise_weight.get(),
-                  self.exercise_reps.get(), self.exercise_sets.get())
+            print(self._exercise_name.get(), self._exercise_weight.get(),
+                  self._exercise_reps.get(), self._exercise_sets.get())
 
         def set_button_state(e):
-            if self.exercise_name.get() and self.exercise_reps.get() and self.exercise_sets.get():
+            if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
                 submit_button.state(['!disabled'])
             else:
                 submit_button.state(['disabled'])
@@ -52,29 +52,29 @@ class HomeWindow(ttk.Frame):
 
         ttk.Label(add_log_frame, text="Exercise:").grid(row=0, column=0, sticky=tk.W)
         exercise_name = ttk.Combobox(add_log_frame,
-                                     textvariable=self.exercise_name,
+                                     textvariable=self._exercise_name,
                                      state='readonly',
-                                     values=self.gym_log_controller.exercises)
+                                     values=self._gym_log_controller.exercises)
         exercise_name.grid(row=0, column=1, sticky=tk.E)
         exercise_name.bind('<<ComboboxSelected>>', set_button_state)
 
         def update_exercise_name_options():
-            exercise_name['values'] = self.gym_log_controller.exercises
-        self.update_exercise_name_options = update_exercise_name_options
+            exercise_name['values'] = self._gym_log_controller.exercises
+        self._update_exercise_name_options = update_exercise_name_options
 
         ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
-        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self.exercise_weight) \
+        ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self._exercise_weight) \
            .grid(row=1, column=1, sticky=tk.E)
 
         ttk.Label(add_log_frame, text="Reps:").grid(row=2, column=0, sticky=tk.W)
         exercise_reps = ttk.Spinbox(add_log_frame, from_=0, to=10,
-                                    textvariable=self.exercise_reps)
+                                    textvariable=self._exercise_reps)
         exercise_reps.grid(row=2, column=1, sticky=tk.E)
         exercise_reps.bind('<ButtonRelease-1>', set_button_state)
 
         ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
         exercise_sets = ttk.Spinbox(add_log_frame, from_=0, to=10,
-                                    textvariable=self.exercise_sets)
+                                    textvariable=self._exercise_sets)
         exercise_sets.grid(row=3, column=1, sticky=tk.E)
         exercise_sets.bind('<ButtonRelease-1>', set_button_state)
 
@@ -94,13 +94,13 @@ class HomeWindow(ttk.Frame):
         def add_exercise(*args):
             def update_exercise_list(future):
                 if future.result():
-                    self.update_exercise_name_options()
+                    self._update_exercise_name_options()
                 else:
                     messagebox.showwarning("That exercise already exists - please try again")
             exercise = exercise_name.get()
             exercise_name.set("")  # clear entry widget once exercise parsed
-            self.thread_pool \
-                .submit(self.gym_log_controller.add_exercise, exercise) \
+            self._thread_pool \
+                .submit(self._gym_log_controller.add_exercise, exercise) \
                 .add_done_callback(update_exercise_list)
 
         add_exercise_frame = ttk.Frame(parent)

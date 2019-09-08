@@ -17,23 +17,23 @@ class LoginWindow(ttk.Frame):
 
         super().__init__(parent)
 
-        self.thread_pool = thread_pool
-        self.gym_log_controller = gym_log_controller
+        self._thread_pool = thread_pool
+        self._gym_log_controller = gym_log_controller
 
-        self.username_entry = tk.StringVar()
-        self.password_entry = tk.StringVar()
+        self._username_entry = tk.StringVar()
+        self._password_entry = tk.StringVar()
 
     def launch(self, successful_login_callback):
         """Build and launch login window"""
         self.pack()
 
         ttk.Label(self, text="Username").grid(row=0, column=0)
-        ttk.Entry(self, textvariable=self.username_entry).grid(row=0, column=1)
-        self.password_entry.set(os.environ.get('DEFAULT_PASSWORD') or '')
+        ttk.Entry(self, textvariable=self._username_entry).grid(row=0, column=1)
+        self._password_entry.set(os.environ.get('DEFAULT_PASSWORD') or '')
 
         ttk.Label(self, text="Password").grid(row=1, column=0)
-        ttk.Entry(self, textvariable=self.password_entry, show='*').grid(row=1, column=1)
-        self.username_entry.set(os.environ.get('DEFAULT_USERNAME') or '')
+        ttk.Entry(self, textvariable=self._password_entry, show='*').grid(row=1, column=1)
+        self._username_entry.set(os.environ.get('DEFAULT_USERNAME') or '')
 
         ttk.Button(self, text="Login",
                 command=lambda: self._login(successful_login_callback)) \
@@ -42,10 +42,10 @@ class LoginWindow(ttk.Frame):
     def _login(self, successful_login_callback):
         """Set a user token on the gym log controller"""
         def begin_login():
-            username, password = self.username_entry.get(), self.password_entry.get()
-            is_login_successful = self.gym_log_controller.check_token(username, password)
+            username, password = self._username_entry.get(), self._password_entry.get()
+            is_login_successful = self._gym_log_controller.check_token(username, password)
             if is_login_successful:
-                self.gym_log_controller.set_exercises()
+                self._gym_log_controller.set_exercises()
             return is_login_successful
         def end_login(future):
             progress_bar.stop()
@@ -63,4 +63,4 @@ class LoginWindow(ttk.Frame):
         progress_bar = ttk.Progressbar(progress_frame, mode="indeterminate")
         progress_bar.pack()
         progress_bar.start()
-        self.thread_pool.submit(begin_login).add_done_callback(end_login)
+        self._thread_pool.submit(begin_login).add_done_callback(end_login)
