@@ -96,7 +96,8 @@ class HomeWindow(ttk.Frame):
                 if future.result():
                     self._update_exercise_name_options()
                 else:
-                    messagebox.showwarning("That exercise already exists - please try again")
+                    messagebox.showwarning("409 - Duplicate Content",
+                    "That exercise already exists - please try again")
             exercise = exercise_name.get()
             exercise_name.set("")  # clear entry widget once exercise parsed
             self._thread_pool \
