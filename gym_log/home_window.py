@@ -18,8 +18,6 @@ class HomeWindow(ttk.Frame):
         self._exercise_reps = tk.IntVar()
         self._exercise_sets = tk.IntVar()
 
-        self._update_exercise_name_options = None
-
     def launch(self):
         """Build and launch home window"""
         self.pack()
@@ -60,7 +58,7 @@ class HomeWindow(ttk.Frame):
 
         def update_exercise_name_options():
             exercise_name['values'] = self._gym_log_controller.exercises
-        self._update_exercise_name_options = update_exercise_name_options
+        self._gym_log_controller.subscribe(update_exercise_name_options)
 
         ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
         ttk.Spinbox(add_log_frame, from_=0, to=10, textvariable=self._exercise_weight) \
@@ -92,17 +90,15 @@ class HomeWindow(ttk.Frame):
             add_exercise_button.state([state])
 
         def add_exercise(*args):
-            def update_exercise_list(future):
-                if future.result():
-                    self._update_exercise_name_options()
-                else:
+            def check_for_409_response(future):
+                if not future.result():
                     messagebox.showwarning("409 - Duplicate Content",
                     "That exercise already exists - please try again")
             exercise = exercise_name.get()
             exercise_name.set("")  # clear entry widget once exercise parsed
             self._thread_pool \
                 .submit(self._gym_log_controller.add_exercise, exercise) \
-                .add_done_callback(update_exercise_list)
+                .add_done_callback(check_for_409_response)
 
         add_exercise_frame = ttk.Frame(parent)
 

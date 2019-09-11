@@ -8,6 +8,14 @@ class GymLogController():
         self.logger = logger
         self.token = None
         self.exercises = None
+        self._observers = []
+
+    def subscribe(self, func):
+        self._observers.append(func)
+
+    def _update_observers(self):
+        for func in self._observers:
+            func()
 
     def check_token(self, username, password):
         try:
@@ -52,6 +60,7 @@ class GymLogController():
                 if response.status_code == 201:
                     self.exercises += response.json()
                     self.exercises.sort()
+                    self._update_observers()
                     return True
                 elif response.status_code == 401:
                     raise PermissionError("invalid token")
