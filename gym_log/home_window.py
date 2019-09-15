@@ -37,9 +37,21 @@ class HomeWindow(ttk.Frame):
 
     def _build_add_log_frame(self, parent):
         """Home window frame responsible for adding new logs"""
+        def clear_inputs():
+            self._exercise_name.set('')
+            self._exercise_weight.set(0)
+            self._exercise_reps.set(0)
+            self._exercise_sets.set(0)
 
         def add_log():
-            print('adding session')
+            name = self._exercise_name.get().lower()
+            weight = self._exercise_weight.get()
+            reps = self._exercise_reps.get()
+            sets = self._exercise_sets.get()
+            clear_inputs()
+            log = [{'exercise_name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
+            self._logs += log
+            set_submit_logs_button_state()
 
         def set_add_log_button_state(e):
             if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
@@ -47,14 +59,14 @@ class HomeWindow(ttk.Frame):
             else:
                 add_log_button.state(['disabled'])
 
-        def set_submit_logs_button_state(e):
+        def set_submit_logs_button_state():
             if self._logs:
                 submit_logs_button.state(['!disabled'])
             else:
                 submit_logs_button.state(['disabled'])
 
         def submit_logs():
-            print('submitting session')
+            print(self._logs)
             '''
             name = self._exercise_name.get().lower()
             weight = self._exercise_weight.get()
