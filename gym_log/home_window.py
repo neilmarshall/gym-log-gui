@@ -18,6 +18,8 @@ class HomeWindow(ttk.Frame):
         self._exercise_reps = tk.IntVar()
         self._exercise_sets = tk.IntVar()
 
+        self._logs = []
+
     def launch(self):
         """Build and launch home window"""
         self.pack()
@@ -37,17 +39,29 @@ class HomeWindow(ttk.Frame):
         """Home window frame responsible for adding new logs"""
 
         def add_log():
+            print('adding session')
+
+        def set_add_log_button_state(e):
+            if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
+                add_log_button.state(['!disabled'])
+            else:
+                add_log_button.state(['disabled'])
+
+        def set_submit_logs_button_state(e):
+            if self._logs:
+                submit_logs_button.state(['!disabled'])
+            else:
+                submit_logs_button.state(['disabled'])
+
+        def submit_logs():
+            print('submitting session')
+            '''
             name = self._exercise_name.get().lower()
             weight = self._exercise_weight.get()
             reps = self._exercise_reps.get()
             sets = self._exercise_sets.get()
             self._gym_log_controller.add_log(name, weight, reps, sets)
-
-        def set_button_state(e):
-            if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
-                submit_button.state(['!disabled'])
-            else:
-                submit_button.state(['disabled'])
+            '''
 
         add_log_frame = ttk.Frame(parent)
 
@@ -57,7 +71,7 @@ class HomeWindow(ttk.Frame):
                                      state='readonly',
                                      values=self._gym_log_controller.exercises)
         exercise_name.grid(row=0, column=1, sticky=tk.E)
-        exercise_name.bind('<<ComboboxSelected>>', set_button_state)
+        exercise_name.bind('<<ComboboxSelected>>', set_add_log_button_state)
 
         def update_exercise_name_options():
             exercise_name['values'] = self._gym_log_controller.exercises
@@ -71,17 +85,23 @@ class HomeWindow(ttk.Frame):
         exercise_reps = ttk.Spinbox(add_log_frame, from_=0, to=10,
                                     textvariable=self._exercise_reps)
         exercise_reps.grid(row=2, column=1, sticky=tk.E)
-        exercise_reps.bind('<ButtonRelease-1>', set_button_state)
+        exercise_reps.bind('<ButtonRelease-1>', set_add_log_button_state)
 
         ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
         exercise_sets = ttk.Spinbox(add_log_frame, from_=0, to=10,
                                     textvariable=self._exercise_sets)
         exercise_sets.grid(row=3, column=1, sticky=tk.E)
-        exercise_sets.bind('<ButtonRelease-1>', set_button_state)
+        exercise_sets.bind('<ButtonRelease-1>', set_add_log_button_state)
 
-        submit_button = ttk.Button(add_log_frame, text="Submit", command=add_log)
-        submit_button.grid(row=4, columnspan=2)
-        submit_button.state(['disabled'])
+        add_log_button = ttk.Button(add_log_frame,
+                text="Add log to session", command=add_log)
+        add_log_button.grid(row=4, column=0)
+        add_log_button.state(['disabled'])
+
+        submit_logs_button = ttk.Button(add_log_frame,
+                text="Submit session", command=submit_logs)
+        submit_logs_button.grid(row=4, column=1)
+        submit_logs_button.state(['disabled'])
 
         return add_log_frame
 
