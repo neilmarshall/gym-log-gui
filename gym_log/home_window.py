@@ -48,12 +48,13 @@ class HomeWindow(ttk.Frame):
             weight = self._exercise_weight.get()
             reps = self._exercise_reps.get()
             sets = self._exercise_sets.get()
-            clear_inputs()
-            log = [{'exercise_name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
+            log = [{'exercise name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
             self._logs += log
+            clear_inputs()
+            set_add_log_button_state()
             set_submit_logs_button_state()
 
-        def set_add_log_button_state(e):
+        def set_add_log_button_state(e=None):
             if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
                 add_log_button.state(['!disabled'])
             else:
@@ -66,14 +67,9 @@ class HomeWindow(ttk.Frame):
                 submit_logs_button.state(['disabled'])
 
         def submit_logs():
-            print(self._logs)
-            '''
-            name = self._exercise_name.get().lower()
-            weight = self._exercise_weight.get()
-            reps = self._exercise_reps.get()
-            sets = self._exercise_sets.get()
-            self._gym_log_controller.add_log(name, weight, reps, sets)
-            '''
+            self._gym_log_controller.add_logs(self._logs)
+            self._logs = []
+            set_submit_logs_button_state()
 
         add_log_frame = ttk.Frame(parent)
 
