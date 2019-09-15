@@ -37,7 +37,7 @@ class HomeWindow(ttk.Frame):
 
     def _build_add_log_frame(self, parent):
         """Home window frame responsible for adding new logs"""
-        def set_button_states(e=None):
+        def set_button_states(*args):
             if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
                 add_log_button.state(['!disabled'])
             else:
@@ -91,8 +91,10 @@ class HomeWindow(ttk.Frame):
             set_button_states()
             clear_inputs()
 
+        # define parent frame to hold widgets
         add_log_frame = ttk.Frame(parent)
 
+        # encapsulate widgets to specify parameters for gym logs
         ttk.Label(add_log_frame, text="Exercise:").grid(row=0, column=0, sticky=tk.W)
         exercise_name = ttk.Combobox(add_log_frame,
                                      textvariable=self._exercise_name,
@@ -138,6 +140,7 @@ class HomeWindow(ttk.Frame):
             widget.pack(side=tk.LEFT)
             widget.state(['disabled'])
 
+        # encapsulate display to show logs in current session
         session_frame = ttk.LabelFrame(add_log_frame, text="Session")
         session_frame.grid(row=5, columnspan=2)
         current_log_display = tk.Text(session_frame, state='disabled')
