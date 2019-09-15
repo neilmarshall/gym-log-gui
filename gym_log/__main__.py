@@ -15,6 +15,7 @@ class MainWindow(ThemedTk):
         """Constructor method"""
 
         super().__init__(theme='arc')
+        self.title('Gym Log - Login')
 
         self.logger = logger
         self.thread_pool = ThreadPoolExecutor()
@@ -28,11 +29,11 @@ class MainWindow(ThemedTk):
                 self.thread_pool, self.gym_log_controller)
 
         # create home window
-        home_window = HomeWindow(self,
+        self.home_window = HomeWindow(self,
                 self.thread_pool, self.gym_log_controller)
 
         # launch login window
-        login_window.launch(lambda: home_window.launch())
+        login_window.launch(self.login_callback)
 
     def create_menu_bar(self):
         """Create menu bar for GUI application"""
@@ -46,6 +47,10 @@ class MainWindow(ThemedTk):
         """Exit the application"""
         self.thread_pool.shutdown(False)
         super().quit()
+
+    def login_callback(self):
+        self.title('Gym Log - Home')
+        self.home_window.launch()
 
 
 if __name__ == '__main__':
