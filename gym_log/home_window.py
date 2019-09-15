@@ -112,15 +112,22 @@ class HomeWindow(ttk.Frame):
         exercise_sets.grid(row=3, column=1, sticky=tk.E)
         exercise_sets.bind('<ButtonRelease-1>', set_add_log_button_state)
 
-        add_log_button = ttk.Button(add_log_frame,
+        button_frame = ttk.Frame(add_log_frame)
+        button_frame.grid(row=4, columnspan=2)
+
+        add_log_button = ttk.Button(button_frame,
                 text="Add log to session", command=add_log)
-        add_log_button.grid(row=4, column=0)
+        add_log_button.pack(side=tk.LEFT)
         add_log_button.state(['disabled'])
 
-        submit_logs_button = ttk.Button(add_log_frame,
+        submit_logs_button = ttk.Button(button_frame,
                 text="Submit session", command=submit_logs)
-        submit_logs_button.grid(row=4, column=1)
+        submit_logs_button.pack(side=tk.LEFT)
         submit_logs_button.state(['disabled'])
+
+        reset_session_button = ttk.Button(button_frame,
+                text="Reset Session", command=lambda: print('resetting session...'))
+        reset_session_button.pack(side=tk.LEFT)
 
         session_frame = ttk.LabelFrame(add_log_frame, text="Session")
         session_frame.grid(row=5, columnspan=2)
