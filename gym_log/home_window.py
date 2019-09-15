@@ -133,18 +133,16 @@ class HomeWindow(ttk.Frame):
 
         add_log_button = ttk.Button(button_frame,
                 text="Add log to session", command=add_log)
-        add_log_button.pack(side=tk.LEFT)
-        add_log_button.state(['disabled'])
 
         submit_logs_button = ttk.Button(button_frame,
                 text="Submit session", command=submit_logs)
-        submit_logs_button.pack(side=tk.LEFT)
-        submit_logs_button.state(['disabled'])
 
         reset_session_button = ttk.Button(button_frame,
                 text="Reset Session", command=update_display)
-        reset_session_button.pack(side=tk.LEFT)
-        reset_session_button.state(['disabled'])
+
+        for widget in (add_log_button, submit_logs_button, reset_session_button):
+            widget.pack(side=tk.LEFT)
+            widget.state(['disabled'])
 
         session_frame = ttk.LabelFrame(add_log_frame, text="Session")
         session_frame.grid(row=5, columnspan=2)
