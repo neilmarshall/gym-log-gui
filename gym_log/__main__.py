@@ -4,8 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 from tkinter import ttk
 
 from gym_log.gym_log_controller import  GymLogController
-from gym_log.login_window import LoginWindow
 from gym_log.home_window import HomeWindow
+from gym_log.login_window import LoginWindow
 
 class MainWindow(tk.Tk):
     """Subclass of tkinter.Tk  - controls GUI application"""
