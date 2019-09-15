@@ -128,18 +128,12 @@ class HomeWindow(ttk.Frame):
             widget.bind('<FocusOut>', set_button_states)
             widget.bind('<Return>', set_button_states)
 
+        # encapsulate window control buttons in their own frame
         button_frame = ttk.Frame(add_log_frame)
         button_frame.grid(row=4, columnspan=2)
-
-        add_log_button = ttk.Button(button_frame,
-                text="Add log to session", command=add_log)
-
-        submit_logs_button = ttk.Button(button_frame,
-                text="Submit session", command=submit_logs)
-
-        reset_session_button = ttk.Button(button_frame,
-                text="Reset Session", command=update_display)
-
+        add_log_button = ttk.Button(button_frame, text="Add log to session", command=add_log)
+        submit_logs_button = ttk.Button(button_frame, text="Submit session", command=submit_logs)
+        reset_session_button = ttk.Button(button_frame, text="Reset Session", command=update_display)
         for widget in (add_log_button, submit_logs_button, reset_session_button):
             widget.pack(side=tk.LEFT)
             widget.state(['disabled'])
