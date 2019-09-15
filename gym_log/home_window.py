@@ -71,6 +71,7 @@ class HomeWindow(ttk.Frame):
 
         def update_display(reset_session=True):
             def update_current_log_display():
+                current_log_display.config(state='normal')
                 current_log_display.delete('1.0', tk.END)
                 data = ''
                 for log in self._logs:
@@ -78,6 +79,7 @@ class HomeWindow(ttk.Frame):
                     data += '\tweights:' + str(log['weights']) + '\n'
                     data += '\treps:' + str(log['reps']) + '\n'
                 current_log_display.insert('1.0', data)
+                current_log_display.config(state='disabled')
             def clear_inputs():
                 self._exercise_name.set('')
                 self._exercise_weight.set(0)
@@ -139,7 +141,7 @@ class HomeWindow(ttk.Frame):
 
         session_frame = ttk.LabelFrame(add_log_frame, text="Session")
         session_frame.grid(row=5, columnspan=2)
-        current_log_display = tk.Text(session_frame)
+        current_log_display = tk.Text(session_frame, state='disabled')
         current_log_display.pack()
 
         return add_log_frame
