@@ -2,18 +2,19 @@ import logging
 import tkinter as tk
 from concurrent.futures import ThreadPoolExecutor
 from tkinter import ttk
+from ttkthemes.themed_tk import ThemedTk
 
 from gym_log.gym_log_controller import  GymLogController
 from gym_log.home_window import HomeWindow
 from gym_log.login_window import LoginWindow
 
-class MainWindow(tk.Tk):
+class MainWindow(ThemedTk):
     """Subclass of tkinter.Tk  - controls GUI application"""
 
     def __init__(self, logger):
         """Constructor method"""
 
-        super().__init__()
+        super().__init__(theme='arc')
 
         self.logger = logger
         self.thread_pool = ThreadPoolExecutor()
