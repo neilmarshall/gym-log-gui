@@ -43,17 +43,6 @@ class HomeWindow(ttk.Frame):
             self._exercise_reps.set(0)
             self._exercise_sets.set(0)
 
-        def add_log():
-            name = self._exercise_name.get().lower()
-            weight = self._exercise_weight.get()
-            reps = self._exercise_reps.get()
-            sets = self._exercise_sets.get()
-            log = [{'exercise name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
-            self._logs += log
-            clear_inputs()
-            set_add_log_button_state()
-            set_submit_logs_button_state()
-
         def set_add_log_button_state(e=None):
             if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
                 add_log_button.state(['!disabled'])
@@ -66,8 +55,25 @@ class HomeWindow(ttk.Frame):
             else:
                 submit_logs_button.state(['disabled'])
 
+        def add_log():
+            name = self._exercise_name.get().lower()
+            weight = self._exercise_weight.get()
+            reps = self._exercise_reps.get()
+            sets = self._exercise_sets.get()
+            log = [{'exercise name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
+            self._logs += log
+            clear_inputs()
+            set_add_log_button_state()
+            set_submit_logs_button_state()
+
         def submit_logs():
-            self._gym_log_controller.add_logs(self._logs)
+            def check_for_409_response(future):
+                if not future.result():
+                    messagebox.showwarning("409 - Duplicate Content",
+                    "A session for that date already exists")
+            self._thread_pool \
+                .submit(self._gym_log_controller.add_logs, self._logs) \
+                .add_done_callback(check_for_409_response)
             self._logs = []
             set_submit_logs_button_state()
 
