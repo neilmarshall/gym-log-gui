@@ -69,7 +69,12 @@ class HomeWindow(ttk.Frame):
 
         def update_current_log_display():
             current_log_display.delete('1.0', tk.END)
-            current_log_display.insert('1.0', self._logs)
+            data = ''
+            for log in self._logs:
+                data += log['exercise name'] + ':\n'
+                data += '\tweights:' + str(log['weights']) + '\n'
+                data += '\treps:' + str(log['reps']) + '\n'
+            current_log_display.insert('1.0', data)
 
         def submit_logs():
             def check_for_409_response(future):
