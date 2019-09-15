@@ -43,17 +43,18 @@ class HomeWindow(ttk.Frame):
             self._exercise_reps.set(0)
             self._exercise_sets.set(0)
 
-        def set_add_log_button_state(e=None):
+        def set_button_states(e=None):
             if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
                 add_log_button.state(['!disabled'])
             else:
                 add_log_button.state(['disabled'])
 
-        def set_submit_logs_button_state():
             if self._logs:
                 submit_logs_button.state(['!disabled'])
+                reset_session_button.state(['!disabled'])
             else:
                 submit_logs_button.state(['disabled'])
+                reset_session_button.state(['disabled'])
 
         def add_log():
             name = self._exercise_name.get().lower()
@@ -62,10 +63,9 @@ class HomeWindow(ttk.Frame):
             sets = self._exercise_sets.get()
             log = [{'exercise name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
             self._logs += log
-            clear_inputs()
-            set_add_log_button_state()
-            set_submit_logs_button_state()
             update_current_log_display()
+            set_button_states()
+            clear_inputs()
 
         def update_current_log_display():
             current_log_display.delete('1.0', tk.END)
@@ -84,8 +84,13 @@ class HomeWindow(ttk.Frame):
             self._thread_pool \
                 .submit(self._gym_log_controller.add_logs, self._logs) \
                 .add_done_callback(check_for_409_response)
+            reset_session()
+
+        def reset_session():
             self._logs = []
-            set_submit_logs_button_state()
+            update_current_log_display()
+            set_button_states()
+            clear_inputs()
 
         add_log_frame = ttk.Frame(parent)
 
@@ -95,7 +100,7 @@ class HomeWindow(ttk.Frame):
                                      state='readonly',
                                      values=self._gym_log_controller.exercises)
         exercise_name.grid(row=0, column=1, sticky=tk.E)
-        exercise_name.bind('<<ComboboxSelected>>', set_add_log_button_state)
+        exercise_name.bind('<<ComboboxSelected>>', set_button_states)
 
         def update_exercise_name_options():
             exercise_name['values'] = self._gym_log_controller.exercises
@@ -109,13 +114,13 @@ class HomeWindow(ttk.Frame):
         exercise_reps = ttk.Spinbox(add_log_frame, from_=0, to=10,
                                     textvariable=self._exercise_reps)
         exercise_reps.grid(row=2, column=1, sticky=tk.E)
-        exercise_reps.bind('<ButtonRelease-1>', set_add_log_button_state)
+        exercise_reps.bind('<ButtonRelease-1>', set_button_states)
 
         ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
         exercise_sets = ttk.Spinbox(add_log_frame, from_=0, to=10,
                                     textvariable=self._exercise_sets)
         exercise_sets.grid(row=3, column=1, sticky=tk.E)
-        exercise_sets.bind('<ButtonRelease-1>', set_add_log_button_state)
+        exercise_sets.bind('<ButtonRelease-1>', set_button_states)
 
         button_frame = ttk.Frame(add_log_frame)
         button_frame.grid(row=4, columnspan=2)
@@ -131,8 +136,9 @@ class HomeWindow(ttk.Frame):
         submit_logs_button.state(['disabled'])
 
         reset_session_button = ttk.Button(button_frame,
-                text="Reset Session", command=lambda: print('resetting session...'))
+                text="Reset Session", command=reset_session)
         reset_session_button.pack(side=tk.LEFT)
+        reset_session_button.state(['disabled'])
 
         session_frame = ttk.LabelFrame(add_log_frame, text="Session")
         session_frame.grid(row=5, columnspan=2)
