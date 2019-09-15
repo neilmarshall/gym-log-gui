@@ -106,10 +106,13 @@ class HomeWindow(ttk.Frame):
         self._gym_log_controller.subscribe(update_exercise_name_options)
 
         ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
-        ttk.Spinbox(add_log_frame, from_=0, to=10,
-                    textvariable=self._exercise_weight,
-                    justify=tk.RIGHT) \
-           .grid(row=1, column=1, sticky=tk.E)
+        exercise_weights = ttk.Spinbox(add_log_frame, from_=0, to=10,
+                                       textvariable=self._exercise_weight,
+                                       justify=tk.RIGHT)
+        exercise_weights.grid(row=1, column=1, sticky=tk.E)
+        exercise_weights.bind('<ButtonRelease-1>', set_button_states)
+        exercise_weights.bind('<FocusOut>', set_button_states)
+        exercise_weights.bind('<Return>', set_button_states)
 
         ttk.Label(add_log_frame, text="Reps:").grid(row=2, column=0, sticky=tk.W)
         exercise_reps = ttk.Spinbox(add_log_frame, from_=0, to=10,
@@ -117,6 +120,8 @@ class HomeWindow(ttk.Frame):
                                     justify=tk.RIGHT)
         exercise_reps.grid(row=2, column=1, sticky=tk.E)
         exercise_reps.bind('<ButtonRelease-1>', set_button_states)
+        exercise_reps.bind('<FocusOut>', set_button_states)
+        exercise_reps.bind('<Return>', set_button_states)
 
         ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
         exercise_sets = ttk.Spinbox(add_log_frame, from_=0, to=10,
@@ -124,6 +129,8 @@ class HomeWindow(ttk.Frame):
                                     justify=tk.RIGHT)
         exercise_sets.grid(row=3, column=1, sticky=tk.E)
         exercise_sets.bind('<ButtonRelease-1>', set_button_states)
+        exercise_sets.bind('<FocusOut>', set_button_states)
+        exercise_sets.bind('<Return>', set_button_states)
 
         button_frame = ttk.Frame(add_log_frame)
         button_frame.grid(row=4, columnspan=2)
