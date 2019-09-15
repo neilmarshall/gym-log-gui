@@ -65,6 +65,11 @@ class HomeWindow(ttk.Frame):
             clear_inputs()
             set_add_log_button_state()
             set_submit_logs_button_state()
+            update_current_log_display()
+
+        def update_current_log_display():
+            current_log_display.delete('1.0', tk.END)
+            current_log_display.insert('1.0', self._logs)
 
         def submit_logs():
             def check_for_409_response(future):
@@ -116,6 +121,11 @@ class HomeWindow(ttk.Frame):
                 text="Submit session", command=submit_logs)
         submit_logs_button.grid(row=4, column=1)
         submit_logs_button.state(['disabled'])
+
+        session_frame = ttk.LabelFrame(add_log_frame, text="Session")
+        session_frame.grid(row=5, columnspan=2)
+        current_log_display = tk.Text(session_frame)
+        current_log_display.pack()
 
         return add_log_frame
 
