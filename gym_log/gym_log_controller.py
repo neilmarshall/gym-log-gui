@@ -1,3 +1,4 @@
+import datetime
 import requests
 
 class GymLogController():
@@ -70,5 +71,27 @@ class GymLogController():
                     raise ValueError("unexpected status code received")
             except requests.exceptions.RequestException:
                 self.logger.exception("An unhandled exception has been caught attempting to create exercise")
+        else:
+            raise PermissionError("invalid token")
+
+    def add_log(self, name, weight, reps, sets):
+        date = datetime.date.today().strftime("%Y-%m-%d")
+        exercises = [{'exercise name': name, 'weights': [weight], 'reps': [reps]}]
+        json = {'date': date, 'exercises': exercises}
+        if self.token:
+            try:
+                url = GymLogController.base_url + 'sessions'
+                headers = {'Authorization': f'Bearer {self.token}'}
+                response = requests.post(url=url, headers=headers, json=json)
+                if response.status_code == 201:
+                    return None
+                elif response.status_code == 400:
+                    raise ValueError("invalid json in request body")
+                elif response.status_code == 401:
+                    raise PermissionError("invalid token")
+                else:
+                    raise ValueError("unexpected status code received")
+            except requests.exceptions.RequestException:
+                self.logger.exception("An unhandled exception has been caught attempting to create record")
         else:
             raise PermissionError("invalid token")

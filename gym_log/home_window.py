@@ -37,8 +37,11 @@ class HomeWindow(ttk.Frame):
         """Home window frame responsible for adding new logs"""
 
         def add_log():
-            print(self._exercise_name.get(), self._exercise_weight.get(),
-                  self._exercise_reps.get(), self._exercise_sets.get())
+            name = self._exercise_name.get().lower()
+            weight = self._exercise_weight.get()
+            reps = self._exercise_reps.get()
+            sets = self._exercise_sets.get()
+            self._gym_log_controller.add_log(name, weight, reps, sets)
 
         def set_button_state(e):
             if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
