@@ -37,12 +37,6 @@ class HomeWindow(ttk.Frame):
 
     def _build_add_log_frame(self, parent):
         """Home window frame responsible for adding new logs"""
-        def clear_inputs():
-            self._exercise_name.set('')
-            self._exercise_weight.set(0)
-            self._exercise_reps.set(0)
-            self._exercise_sets.set(0)
-
         def set_button_states(e=None):
             if self._exercise_name.get() and self._exercise_reps.get() and self._exercise_sets.get():
                 add_log_button.state(['!disabled'])
@@ -63,18 +57,7 @@ class HomeWindow(ttk.Frame):
             sets = self._exercise_sets.get()
             log = [{'exercise name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
             self._logs += log
-            update_current_log_display()
-            set_button_states()
-            clear_inputs()
-
-        def update_current_log_display():
-            current_log_display.delete('1.0', tk.END)
-            data = ''
-            for log in self._logs:
-                data += log['exercise name'] + ':\n'
-                data += '\tweights:' + str(log['weights']) + '\n'
-                data += '\treps:' + str(log['reps']) + '\n'
-            current_log_display.insert('1.0', data)
+            update_display(False)
 
         def submit_logs():
             def check_for_409_response(future):
@@ -84,10 +67,24 @@ class HomeWindow(ttk.Frame):
             self._thread_pool \
                 .submit(self._gym_log_controller.add_logs, self._logs) \
                 .add_done_callback(check_for_409_response)
-            reset_session()
+            update_display()
 
-        def reset_session():
-            self._logs = []
+        def update_display(reset_session=True):
+            def update_current_log_display():
+                current_log_display.delete('1.0', tk.END)
+                data = ''
+                for log in self._logs:
+                    data += log['exercise name'] + ':\n'
+                    data += '\tweights:' + str(log['weights']) + '\n'
+                    data += '\treps:' + str(log['reps']) + '\n'
+                current_log_display.insert('1.0', data)
+            def clear_inputs():
+                self._exercise_name.set('')
+                self._exercise_weight.set(0)
+                self._exercise_reps.set(0)
+                self._exercise_sets.set(0)
+            if reset_session:
+                self._logs = []
             update_current_log_display()
             set_button_states()
             clear_inputs()
@@ -136,7 +133,7 @@ class HomeWindow(ttk.Frame):
         submit_logs_button.state(['disabled'])
 
         reset_session_button = ttk.Button(button_frame,
-                text="Reset Session", command=reset_session)
+                text="Reset Session", command=update_display)
         reset_session_button.pack(side=tk.LEFT)
         reset_session_button.state(['disabled'])
 
