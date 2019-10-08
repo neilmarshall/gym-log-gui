@@ -1,4 +1,6 @@
+import datetime
 import tkinter as tk
+from calendar import month_name, monthrange
 from tkinter import messagebox
 from tkinter import ttk
 
@@ -130,9 +132,14 @@ class HomeWindow(ttk.Frame):
             widget.bind('<FocusOut>', set_button_states)
             widget.bind('<Return>', set_button_states)
 
+        # add date picker
+        date_picker_frame = ttk.Frame(add_log_frame)
+        date_picker = DatePicker(date_picker_frame)
+        date_picker_frame.grid(row=0, rowspan=3, column=2)
+
         # encapsulate window control buttons in their own frame
         button_frame = ttk.Frame(add_log_frame)
-        button_frame.grid(row=4, columnspan=2)
+        button_frame.grid(row=4, columnspan=3)
         add_log_button = ttk.Button(button_frame, text="Add log to session", command=add_log)
         submit_logs_button = ttk.Button(button_frame, text="Submit session", command=submit_logs)
         reset_session_button = ttk.Button(button_frame, text="Reset Session", command=update_display)
@@ -142,7 +149,7 @@ class HomeWindow(ttk.Frame):
 
         # encapsulate display to show logs in current session
         session_frame = ttk.LabelFrame(add_log_frame, text="Session")
-        session_frame.grid(row=5, columnspan=2)
+        session_frame.grid(row=5, columnspan=3)
         current_log_display = tk.Text(session_frame, state='disabled')
         current_log_display.pack()
 
@@ -183,3 +190,32 @@ class HomeWindow(ttk.Frame):
 
         return add_exercise_frame
 
+
+class DatePicker():
+    def __init__(self, parent):
+        self.today = datetime.date.today()
+        self.year, self.month, self.day = tk.IntVar(), tk.StringVar(), tk.IntVar()
+        self.year.set(self.today.year)
+        self.month.set(month_name[self.today.month])
+        self.day.set(self.today.day)
+        self.days = list(range(1, monthrange(self.today.year, self.today.month)[1] + 1))
+        ttk.Label(parent, text="Year:").grid(row=0, column=0, sticky=tk.W)
+        ttk.Spinbox(parent, textvariable=self.year,
+                    values=(self.today.year - 1, self.today.year, self.today.year + 1)) \
+           .grid(row=0, column=1)
+        ttk.Label(parent, text="Month:").grid(row=1, column=0, sticky=tk.W)
+        month_picker = ttk.Combobox(parent, textvariable=self.month, state='readonly',
+                                    values=[month_name[i] for i in range(1, 13)])
+        month_picker.grid(row=1, column=1)
+        month_picker.bind('<<ComboboxSelected>>', self.update_days)
+        ttk.Label(parent, text="Day:").grid(row=2, column=0, sticky=tk.W)
+        self.day_picker = ttk.Spinbox(parent, values=self.days, textvariable=self.day)
+        self.day_picker.grid(row=2, column=1)
+
+    def update_days(self, *args):
+        index = list(month_name).index(self.month.get())
+        self.days = list(range(1, monthrange(self.today.year, index)[1] + 1))
+        self.day_picker.config(values=self.days)
+
+    def get_date(self):
+        return self.year.get(), self.month.get(), self.day.get()
