@@ -34,7 +34,7 @@ class HomeWindow(ttk.Frame):
         add_exercise_frame = self._build_add_exercise_frame(notebook)
         notebook.add(add_exercise_frame, text="Add Exercises")
 
-        search_log_frame = ttk.Frame(notebook)
+        search_log_frame = self._build_show_logs_frame(notebook)
         notebook.add(search_log_frame, text="Search Logs")
 
     def _build_add_log_frame(self, parent):
@@ -189,3 +189,63 @@ class HomeWindow(ttk.Frame):
         add_exercise_button.state(['disabled'])
 
         return add_exercise_frame
+
+    def _build_show_logs_frame(self, parent):
+        """Home window frame responsible for showing existing logs"""
+        def get_logs():
+            date = date_picker.get_date()
+            self._thread_pool.submit(self._gym_log_controller.get_logs, date) \
+                .add_done_callback(update_display)
+
+        def update_display(future):
+            print("updating display...")
+            print(future.result())
+            '''
+            def update_display(reset_session=True):
+                def update_current_log_display():
+                    current_log_display.config(state='normal')
+                    current_log_display.delete('1.0', tk.END)
+                    data = ''
+                    for log in self._logs:
+                        data += log['exercise name'] + ':\n'
+                        data += '\tweights:' + str(log['weights']) + '\n'
+                        data += '\treps:' + str(log['reps']) + '\n'
+                    current_log_display.insert('1.0', data)
+                    current_log_display.config(state='disabled')
+                def clear_inputs():
+                    self._exercise_name.set('')
+                    self._exercise_weight.set(0)
+                    self._exercise_reps.set(0)
+                    self._exercise_sets.set(0)
+                if reset_session:
+                    self._logs = []
+                update_current_log_display()
+                set_button_states()
+                clear_inputs()
+            '''
+
+        def show_logs(*args):
+            get_logs()
+
+        # define parent frame to hold widgets
+        show_logs_frame = ttk.Frame(parent)
+
+        # add date picker
+        date_picker_frame = ttk.Frame(show_logs_frame)
+        date_picker = DatePicker(date_picker_frame)
+        date_picker_frame.grid(row=0, rowspan=3, column=2)
+
+        # encapsulate window control buttons in their own frame
+        button_frame = ttk.Frame(show_logs_frame)
+        button_frame.grid(row=4, columnspan=3)
+        show_logs_button = ttk.Button(button_frame, text="Show logs", command=show_logs)
+        show_logs_button.pack(side=tk.LEFT)
+
+        # encapsulate display to show logs
+        display_frame = ttk.LabelFrame(show_logs_frame, text="Logs")
+        display_frame.grid(row=5, columnspan=3)
+        current_log_display = tk.Text(display_frame, state='disabled')
+        current_log_display.pack()
+
+        return show_logs_frame
+

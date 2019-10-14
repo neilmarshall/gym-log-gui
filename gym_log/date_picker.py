@@ -47,5 +47,6 @@ class DatePicker():
             self.day.set(self.days[-1])
 
     def get_date(self):
-        return self.year.get(), self.month.get(), self.day.get()
-
+        month = list(month_name).index(self.month.get())
+        return datetime.date(self.year.get(),
+                             month, self.day.get())

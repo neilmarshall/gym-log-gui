@@ -96,3 +96,44 @@ class GymLogController():
                 self.logger.exception("An unhandled exception has been caught attempting to create record")
         else:
             raise PermissionError("invalid token")
+
+    def get_logs(self, date):
+        """
+        Example URL:
+            https://gym-log-staging.herokuapp.com/api/sessions/2019-07-17
+
+        Example response:
+            [{
+                "session": {
+                    "date": "Wed, 17 Jul 2019 00:00:00 -0000",
+                    "username": "Hadlee Poure",
+                    "exercises": ["dumbbell bench press", "tricep pushdown"],
+                    "reps": [
+                        [9, 13],
+                        [10]
+                    ],
+                    "weights": [
+                        [19, 36],
+                        [108]
+                    ]
+                }
+            }]
+        """
+        print(date)
+        return """
+            [{
+                "session": {
+                    "date": "Wed, 17 Jul 2019 00:00:00 -0000",
+                    "username": "Hadlee Poure",
+                    "exercises": ["dumbbell bench press", "tricep pushdown"],
+                    "reps": [
+                        [9, 13],
+                        [10]
+                    ],
+                    "weights": [
+                        [19, 36],
+                        [108]
+                    ]
+                }
+            }]
+            """
