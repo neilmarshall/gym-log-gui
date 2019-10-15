@@ -59,7 +59,7 @@ class HomeWindow(ttk.Frame):
             weight = self._exercise_weight.get()
             reps = self._exercise_reps.get()
             sets = self._exercise_sets.get()
-            log = [{'exercise name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
+            log = [{'exercise name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]  # TODO : incorporate date parameter into this
             self._logs += log
             update_display(False)
 
@@ -69,7 +69,7 @@ class HomeWindow(ttk.Frame):
                     messagebox.showwarning("409 - Duplicate Content",
                     "A session for that date already exists")
             self._thread_pool \
-                .submit(self._gym_log_controller.add_logs, self._logs) \
+                .submit(self._gym_log_controller.add_logs, self._logs) \  # TODO : incorporate date parameter into this
                 .add_done_callback(check_for_409_response)
             update_display()
 
@@ -78,7 +78,7 @@ class HomeWindow(ttk.Frame):
                 current_log_display.config(state='normal')
                 current_log_display.delete('1.0', tk.END)
                 data = ''
-                for log in self._logs:
+                for log in self._logs:  # TODO : incorporate date parameter into this
                     data += log['exercise name'] + ':\n'
                     data += '\tweights: ' + str(log['weights']) + '\n'
                     data += '\treps: ' + str(log['reps']) + '\n'
