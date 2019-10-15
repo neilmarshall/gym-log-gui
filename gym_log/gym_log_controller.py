@@ -75,8 +75,7 @@ class GymLogController():
         else:
             raise PermissionError("invalid token")
 
-    def add_logs(self, exercises):
-        date = datetime.date.today().strftime("%Y-%m-%d")
+    def add_logs(self, date, exercises):
         json = {'date': date, 'exercises': exercises}
         if self.token:
             try:
