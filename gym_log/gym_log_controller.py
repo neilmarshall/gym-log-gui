@@ -106,7 +106,7 @@ class GymLogController():
                 headers = {'Authorization': f'Bearer {self.token}'}
                 response = requests.get(url=url, headers=headers)
                 if response.status_code == 200:
-                    return json.loads(response.text)[0]
+                    return json.loads(response.text)
                 else:
                     raise ValueError("unexpected status code received")
             except requests.exceptions.RequestException:
