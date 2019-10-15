@@ -99,10 +99,9 @@ class GymLogController():
             raise PermissionError("invalid token")
 
     def get_logs(self, date):
-        # TODO : check if date is None and return all sessions if so
         if self.token:
             try:
-                url = GymLogController.base_url + 'sessions/' + str(date)
+                url = GymLogController.base_url + 'sessions' + ('/' + str(date) if date is not None else '')
                 headers = {'Authorization': f'Bearer {self.token}'}
                 response = requests.get(url=url, headers=headers)
                 if response.status_code == 200:

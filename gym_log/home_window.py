@@ -20,6 +20,7 @@ class HomeWindow(ttk.Frame):
         self._exercise_weight = tk.IntVar()
         self._exercise_reps = tk.IntVar()
         self._exercise_sets = tk.IntVar()
+        self._show_all_logs_value = tk.IntVar()
 
         self._logs = []
 
@@ -194,12 +195,14 @@ class HomeWindow(ttk.Frame):
     def _build_show_logs_frame(self, parent):
         """Home window frame responsible for showing existing logs"""
         def get_logs():
-            date = date_picker.get_date()
+            if self._show_all_logs_value.get():
+                date = None
+            else:
+                date = date_picker.get_date()
             self._thread_pool.submit(self._gym_log_controller.get_logs, date) \
                 .add_done_callback(update_display)
 
         def update_display(future):
-            # TODO : add a checkbox to select sessions across all dates (ignore date argument if so)
             data = future.result()
             current_log_display.config(state='normal')
             current_log_display.delete('1.0', tk.END)
@@ -235,6 +238,9 @@ class HomeWindow(ttk.Frame):
         button_frame.grid(row=4, columnspan=3)
         show_logs_button = ttk.Button(button_frame, text="Show logs", command=show_logs)
         show_logs_button.pack(side=tk.LEFT)
+        show_all_logs_checkbox = ttk.Checkbutton(button_frame,
+                text="Show all logs", variable=self._show_all_logs_value)
+        show_all_logs_checkbox.pack(side=tk.LEFT)
 
         # encapsulate display to show logs
         display_frame = ttk.LabelFrame(show_logs_frame, text="Logs")
