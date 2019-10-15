@@ -1,3 +1,4 @@
+import datetime
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -193,36 +194,29 @@ class HomeWindow(ttk.Frame):
     def _build_show_logs_frame(self, parent):
         """Home window frame responsible for showing existing logs"""
         def get_logs():
-            date = date_picker.get_date()
+            #date = date_picker.get_date()
+            date = datetime.date(2019, 7, 17)  # TODO : Remove this line and uncomment above
             self._thread_pool.submit(self._gym_log_controller.get_logs, date) \
                 .add_done_callback(update_display)
 
         def update_display(future):
-            print("updating display...")
-            print(future.result())
-            '''
-            def update_display(reset_session=True):
-                def update_current_log_display():
-                    current_log_display.config(state='normal')
-                    current_log_display.delete('1.0', tk.END)
-                    data = ''
-                    for log in self._logs:
-                        data += log['exercise name'] + ':\n'
-                        data += '\tweights:' + str(log['weights']) + '\n'
-                        data += '\treps:' + str(log['reps']) + '\n'
-                    current_log_display.insert('1.0', data)
-                    current_log_display.config(state='disabled')
-                def clear_inputs():
-                    self._exercise_name.set('')
-                    self._exercise_weight.set(0)
-                    self._exercise_reps.set(0)
-                    self._exercise_sets.set(0)
-                if reset_session:
-                    self._logs = []
-                update_current_log_display()
-                set_button_states()
-                clear_inputs()
-            '''
+            # TODO : handle empty results - show string saying "no logs for this date"
+            # TODO : add a checkbox to select sessions across all dates (ignore date argument if so)
+            data = future.result()
+            current_log_display.config(state='normal')
+            current_log_display.delete('1.0', tk.END)
+            for row in data:
+                session = row['session']
+                date = session['date']  # TODO : tidy up date formatting
+                exercises = session['exercises']
+                reps = session['reps']
+                weights = session['weights']
+                current_log_display.insert(tk.END, str(date) + '\n')
+                for e, r, w in zip(exercises, reps, weights):
+                    current_log_display.insert(tk.END, str(e) + ':\n')
+                    current_log_display.insert(tk.END, '\tweights:' + str(w) + '\n')
+                    current_log_display.insert(tk.END, '\treps:' + str(r) + '\n')
+            current_log_display.config(state='disabled')
 
         def show_logs(*args):
             get_logs()
