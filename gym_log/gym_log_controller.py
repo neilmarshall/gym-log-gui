@@ -1,3 +1,4 @@
+import json
 import datetime
 import requests
 
@@ -98,42 +99,16 @@ class GymLogController():
             raise PermissionError("invalid token")
 
     def get_logs(self, date):
-        """
-        Example URL:
-            https://gym-log-staging.herokuapp.com/api/sessions/2019-07-17
-
-        Example response:
-            [{
-                "session": {
-                    "date": "Wed, 17 Jul 2019 00:00:00 -0000",
-                    "username": "Hadlee Poure",
-                    "exercises": ["dumbbell bench press", "tricep pushdown"],
-                    "reps": [
-                        [9, 13],
-                        [10]
-                    ],
-                    "weights": [
-                        [19, 36],
-                        [108]
-                    ]
-                }
-            }]
-        """
-        print(date)
-        return """
-            [{
-                "session": {
-                    "date": "Wed, 17 Jul 2019 00:00:00 -0000",
-                    "username": "Hadlee Poure",
-                    "exercises": ["dumbbell bench press", "tricep pushdown"],
-                    "reps": [
-                        [9, 13],
-                        [10]
-                    ],
-                    "weights": [
-                        [19, 36],
-                        [108]
-                    ]
-                }
-            }]
-            """
+        if self.token:
+            try:
+                url = GymLogController.base_url + 'sessions/' + str(date)
+                headers = {'Authorization': f'Bearer {self.token}'}
+                response = requests.get(url=url, headers=headers)
+                if response.status_code == 200:
+                    return json.loads(response.text)[0]
+                else:
+                    raise ValueError("unexpected status code received")
+            except requests.exceptions.RequestException:
+                self.logger.exception("An unhandled exception has been caught attempting to get sessions")
+        else:
+            raise PermissionError("invalid token")
