@@ -76,7 +76,9 @@ class GymLogController():
             raise PermissionError("invalid token")
 
     def add_logs(self, date, exercises):
-        json = {'date': date, 'exercises': exercises}
+        exercise_data = [{'exercise name': exercise, 'weights': log['weights'], 'reps': log['reps']}
+                         for exercise, log in exercises.items()]
+        json = {'date': date, 'exercises': exercise_data}
         if self.token:
             try:
                 url = GymLogController.base_url + 'sessions'

@@ -22,7 +22,7 @@ class HomeWindow(ttk.Frame):
         self._exercise_sets = tk.IntVar()
         self._show_all_logs_value = tk.IntVar()
 
-        self._logs = []
+        self._logs = {}
 
     def launch(self):
         """Build and launch home window"""
@@ -56,11 +56,14 @@ class HomeWindow(ttk.Frame):
 
         def add_log():
             name = self._exercise_name.get().lower()
-            weight = self._exercise_weight.get()
-            reps = self._exercise_reps.get()
             sets = self._exercise_sets.get()
-            log = [{'exercise name': name, 'weights': [weight] * sets, 'reps': [reps] * sets}]
-            self._logs += log
+            weight = [self._exercise_weight.get()] * sets
+            reps = [self._exercise_reps.get()] * sets
+            if name in self._logs:
+                self._logs[name]['weights'] += weight
+                self._logs[name]['reps'] += reps
+            else:
+                self._logs[name] = {'weights': weight, 'reps': reps}
             update_display(False)
 
         def submit_logs():
@@ -79,8 +82,8 @@ class HomeWindow(ttk.Frame):
                 current_log_display.config(state='normal')
                 current_log_display.delete('1.0', tk.END)
                 data = ''
-                for log in self._logs:
-                    data += log['exercise name'] + ':\n'
+                for name, log in self._logs.items():
+                    data += name + ':\n'
                     data += '\tweights: ' + str(log['weights']) + '\n'
                     data += '\treps: ' + str(log['reps']) + '\n'
                 current_log_display.insert('1.0', data)
@@ -91,7 +94,7 @@ class HomeWindow(ttk.Frame):
                 self._exercise_reps.set(0)
                 self._exercise_sets.set(0)
             if reset_session:
-                self._logs = []
+                self._logs = {}
             update_current_log_display()
             set_button_states()
             clear_inputs()
@@ -113,19 +116,19 @@ class HomeWindow(ttk.Frame):
         self._gym_log_controller.subscribe(update_exercise_name_options)
 
         ttk.Label(add_log_frame, text="Weight:").grid(row=1, column=0, sticky=tk.W)
-        exercise_weights = ttk.Spinbox(add_log_frame, from_=0, to=10,
+        exercise_weights = ttk.Spinbox(add_log_frame, from_=0, to=100,
                                        textvariable=self._exercise_weight,
                                        justify=tk.RIGHT)
         exercise_weights.grid(row=1, column=1, sticky=tk.E)
 
         ttk.Label(add_log_frame, text="Reps:").grid(row=2, column=0, sticky=tk.W)
-        exercise_reps = ttk.Spinbox(add_log_frame, from_=0, to=10,
+        exercise_reps = ttk.Spinbox(add_log_frame, from_=0, to=100,
                                     textvariable=self._exercise_reps,
                                     justify=tk.RIGHT)
         exercise_reps.grid(row=2, column=1, sticky=tk.E)
 
         ttk.Label(add_log_frame, text="Sets:").grid(row=3, column=0, sticky=tk.W)
-        exercise_sets = ttk.Spinbox(add_log_frame, from_=0, to=10,
+        exercise_sets = ttk.Spinbox(add_log_frame, from_=0, to=100,
                                     textvariable=self._exercise_sets,
                                     justify=tk.RIGHT)
         exercise_sets.grid(row=3, column=1, sticky=tk.E)
