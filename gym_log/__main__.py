@@ -1,7 +1,6 @@
 import logging
 import tkinter as tk
 from concurrent.futures import ThreadPoolExecutor
-from tkinter import ttk
 from ttkthemes.themed_tk import ThemedTk
 
 from gym_log.gym_log_controller import  GymLogController
@@ -15,42 +14,57 @@ class MainWindow(ThemedTk):
         """Constructor method"""
 
         super().__init__(theme='arc')
-        self.title('Gym Log - Login')
+
+        self.thread_pool = ThreadPoolExecutor()
 
         self.logger = logger
-        self.thread_pool = ThreadPoolExecutor()
         self.gym_log_controller = GymLogController(self.logger)
+
+        self.login_window = None
+        self.home_window = None
 
         # create menu bar
         self.create_menu_bar()
 
-        # create login window
-        login_window = LoginWindow(self,
-                self.thread_pool, self.gym_log_controller)
+        # create and launch windows
+        self.launch_login_window()
 
-        # create home window
+    def launch_login_window(self):
+        """Instantiate and launch login window"""
+        def login_callback():
+            self.title('Gym Log - Home')
+            self.launch_home_window()
+        self.title('Gym Log - Login')
+        self.login_window = LoginWindow(self,
+                self.thread_pool, self.gym_log_controller)
+        self.login_window.launch(login_callback)
+
+    def launch_home_window(self):
+        """Instantiate and launch home window"""
         self.home_window = HomeWindow(self,
                 self.thread_pool, self.gym_log_controller)
-
-        # launch login window
-        login_window.launch(self.login_callback)
+        self.home_window.launch()
 
     def create_menu_bar(self):
         """Create menu bar for GUI application"""
         menu_bar = tk.Menu(self)
         file_menu = tk.Menu(menu_bar, tearoff=0)
+        file_menu.add_command(label="Logout", command=self.logout)
         file_menu.add_command(label="Exit", command=self.quit)
         menu_bar.add_cascade(label='File', menu=file_menu)
         self.config(menu=menu_bar)
+
+    def logout(self):
+        """Log out current user from the home window"""
+        if self.home_window is not None:
+            self.home_window.destroy()
+            self.home_window = None
+            self.launch_login_window()
 
     def quit(self):
         """Exit the application"""
         self.thread_pool.shutdown(False)
         super().quit()
-
-    def login_callback(self):
-        self.title('Gym Log - Home')
-        self.home_window.launch()
 
 
 if __name__ == '__main__':
