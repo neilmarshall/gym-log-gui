@@ -29,19 +29,27 @@ class LoginWindow(ttk.Frame):
         """Build and launch login window"""
         self.pack()
 
-        ttk.Label(self, text="Username").grid(row=0, column=0)
-        ttk.Entry(self, textvariable=self._username_entry).grid(row=0, column=1, columnspan=2)
+        # add username and password input widgets
+        login_widgets = ttk.Frame(self)
+        login_widgets.pack(padx=10, pady=5)
+
+        ttk.Label(login_widgets, text="Username").grid(row=0, column=0)
+        ttk.Entry(login_widgets, textvariable=self._username_entry).grid(row=0, column=1, columnspan=2)
         self._password_entry.set(os.environ.get('DEFAULT_PASSWORD') or '')
 
-        ttk.Label(self, text="Password").grid(row=1, column=0)
-        ttk.Entry(self, textvariable=self._password_entry, show='*').grid(row=1, column=1, columnspan=2)
+        ttk.Label(login_widgets, text="Password").grid(row=1, column=0)
+        ttk.Entry(login_widgets, textvariable=self._password_entry, show='*').grid(row=1, column=1, columnspan=2)
         self._username_entry.set(os.environ.get('DEFAULT_USERNAME') or '')
 
-        ttk.Button(self, text="Login",
+        # add login button and 'remember me' functionality
+        button_widgets = ttk.Frame(self)
+        button_widgets.pack(padx=10, pady=5)
+
+        ttk.Button(button_widgets, text="Login",
                 command=lambda: self._login(successful_login_callback)) \
            .grid(row=2, column=1)
 
-        ttk.Checkbutton(self, text="Remember me", variable=self._remember_login).grid(row=2, column=2)
+        ttk.Checkbutton(button_widgets, text="Remember me", variable=self._remember_login).grid(row=2, column=2)
         self._remember_login.set(True)
 
     def _login(self, successful_login_callback):
