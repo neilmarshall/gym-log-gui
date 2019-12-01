@@ -145,7 +145,7 @@ class HomeWindow(ttk.Frame):
 
         # encapsulate window control buttons in their own frame
         button_frame = ttk.Frame(add_log_frame)
-        button_frame.grid(row=4, columnspan=3)
+        button_frame.grid(row=4, columnspan=3, pady=(10, 5))
         add_log_button = ttk.Button(button_frame, text="Add log to session", command=add_log)
         submit_logs_button = ttk.Button(button_frame, text="Submit session", command=submit_logs)
         reset_session_button = ttk.Button(button_frame, text="Reset Session", command=update_display)
@@ -155,7 +155,7 @@ class HomeWindow(ttk.Frame):
 
         # encapsulate display to show logs in current session
         session_frame = ttk.LabelFrame(add_log_frame, text="Session")
-        session_frame.grid(row=5, columnspan=3)
+        session_frame.grid(row=5, columnspan=3, padx=10, pady=(0, 10))
         current_log_display = tk.Text(session_frame, state='disabled')
         current_log_display.pack()
 
@@ -239,7 +239,7 @@ class HomeWindow(ttk.Frame):
 
         # encapsulate window control buttons in their own frame
         button_frame = ttk.Frame(show_logs_frame)
-        button_frame.grid(row=4, columnspan=3)
+        button_frame.grid(row=4, columnspan=3, pady=(10, 5))
         show_logs_button = ttk.Button(button_frame, text="Show logs", command=show_logs)
         show_logs_button.pack(side=tk.LEFT)
         show_all_logs_checkbox = ttk.Checkbutton(button_frame,
@@ -248,8 +248,8 @@ class HomeWindow(ttk.Frame):
 
         # encapsulate display to show logs
         display_frame = ttk.LabelFrame(show_logs_frame, text="Logs")
-        display_frame.grid(row=5, columnspan=3)
-        current_log_display = tk.Text(display_frame, state='disabled')
+        display_frame.grid(row=5, columnspan=3, padx=10)
+        current_log_display = tk.Text(display_frame, state='disabled', height=26)
         current_log_display.pack()
 
         return show_logs_frame
