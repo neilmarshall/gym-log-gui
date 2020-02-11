@@ -4,9 +4,8 @@ import requests
 
 class GymLogController():
 
-    base_url = r'http://localhost:5000/api/'
-
-    def __init__(self, logger):
+    def __init__(self, url, logger):
+        self.base_url = url
         self.logger = logger
         self.token = None
         self.exercises = None
@@ -21,7 +20,7 @@ class GymLogController():
 
     def check_token(self, username, password):
         try:
-            url = GymLogController.base_url + 'token'
+            url = self.base_url + 'token'
             response = requests.get(url, auth=(username, password))
             if response.status_code == 200:
                 try:
@@ -39,7 +38,7 @@ class GymLogController():
     def set_exercises(self):
         if self.token:
             try:
-                url = GymLogController.base_url + 'exercises'
+                url = self.base_url + 'exercises'
                 headers = {'Authorization': f'Bearer {self.token}'}
                 response = requests.get(url=url, headers=headers)
                 if response.status_code == 200:
@@ -56,7 +55,7 @@ class GymLogController():
     def add_exercise(self, exercise):
         if self.token:
             try:
-                url = GymLogController.base_url + 'exercises'
+                url = self.base_url + 'exercises'
                 headers = {'Authorization': f'Bearer {self.token}'}
                 response = requests.post(url=url, headers=headers, json={'exercises': [exercise]})
                 if response.status_code == 201:
@@ -81,7 +80,7 @@ class GymLogController():
         json = {'date': date, 'exercises': exercise_data}
         if self.token:
             try:
-                url = GymLogController.base_url + 'sessions'
+                url = self.base_url + 'sessions'
                 headers = {'Authorization': f'Bearer {self.token}'}
                 response = requests.post(url=url, headers=headers, json=json)
                 if response.status_code == 201:
@@ -105,7 +104,7 @@ class GymLogController():
     def get_logs(self, date):
         if self.token:
             try:
-                url = GymLogController.base_url + 'sessions' + ('/' + str(date) if date is not None else '')
+                url = self.base_url + 'sessions' + ('/' + str(date) if date is not None else '')
                 headers = {'Authorization': f'Bearer {self.token}'}
                 response = requests.get(url=url, headers=headers)
                 if response.status_code == 200:

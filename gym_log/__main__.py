@@ -10,7 +10,7 @@ from gym_log.login_window import LoginWindow
 class MainWindow(ThemedTk):
     """Subclass of tkinter.Tk  - controls GUI application"""
 
-    def __init__(self, logger):
+    def __init__(self, ulr, logger):
         """Constructor method"""
 
         super().__init__(theme='arc')
@@ -18,7 +18,7 @@ class MainWindow(ThemedTk):
         self.thread_pool = ThreadPoolExecutor()
 
         self.logger = logger
-        self.gym_log_controller = GymLogController(self.logger)
+        self.gym_log_controller = GymLogController(url, self.logger)
 
         self.login_window = None
         self.home_window = None
@@ -69,4 +69,4 @@ class MainWindow(ThemedTk):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    MainWindow(logging.getLogger()).mainloop()
+    MainWindow(url, logging.getLogger()).mainloop()
