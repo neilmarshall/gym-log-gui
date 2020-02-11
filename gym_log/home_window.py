@@ -55,7 +55,7 @@ class HomeWindow(ttk.Frame):
                 reset_session_button.state(['disabled'])
 
         def add_log():
-            name = self._exercise_name.get().lower()
+            name = self._exercise_name.get().title()
             sets = self._exercise_sets.get()
             weight = [self._exercise_weight.get()] * sets
             reps = [self._exercise_reps.get()] * sets
