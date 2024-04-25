@@ -5,4 +5,4 @@ Pillow==9.3.0
 python-dotenv==0.10.3
 requests==2.22.0
 ttkthemes==2.3.0
-urllib3==1.26.5
+urllib3==1.26.18
